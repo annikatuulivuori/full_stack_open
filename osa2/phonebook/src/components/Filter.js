@@ -1,10 +1,12 @@
-const Filter = ({ filter, filterByName }) => {
+import React from 'react'
+
+const Filter = ({ filter, onChange }) => {
     return (
       <div>
         filter shown with 
         <input 
           value={filter} 
-          onChange={filterByName}
+          onChange={onChange}
         />
       </div>
     )

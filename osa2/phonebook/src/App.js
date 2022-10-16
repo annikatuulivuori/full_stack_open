@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
 
 const App = (props) => {
   const [persons, setPersons] = useState(props.persons)
@@ -17,18 +18,19 @@ const App = (props) => {
     }
   }
 
-  const addPerson = (event) => {
+  const addPerson = () => {
     const personObject = {
-      id: newName.toLowerCase,
+      id: newName.toLowerCase(),
       name: newName,
       number: newNumber,
     }
 
     setPersons(persons.concat(personObject))
     setNewName('')
+    setNewNumber('')
   }
 
-  const personFound = persons.find((person) => person.id === newName.toLowerCase) 
+  const personFound = persons.find((person) => person.id === newName.toLowerCase()) 
 
   const alertUser = () => {
     window.alert(`${newName} is already added to phonebook`)
@@ -52,30 +54,14 @@ const App = (props) => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-          filter shown with <input 
-              value={newFilter}
-              onChange={handleFilterChange} 
-            />
-        </div>
+      <Filter value={newFilter} onChange={handleFilterChange} />
       <h2>add a new</h2>
-      <form onSubmit={checkPerson}>
-        <div>
-          name: <input 
-              value={newName}
-              onChange={handleNameChange} 
-            />
-        </div>
-        <div>
-          number: <input
-              value={newNumber}
-              onChange={handleNumberChange}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm 
+        onSubmit={checkPerson}
+        newName={newName}
+        handleNameChange={handleNameChange}
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}/>
       <h2>Numbers</h2>
       <Persons persons={persons} newFilter={newFilter} />
     </div>
