@@ -1,13 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 
 const App = (props) => {
-  const [persons, setPersons] = useState(props.persons)
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState ('')
   const [newNumber, setNewNumber] = useState ('')
   const [newFilter, setNewFilter] = useState ('')
+
+  useEffect(() => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }, [])
+  console.log('reder', persons.length, 'persons')
   
   const checkPerson = (event) => {
     event.preventDefault()
@@ -20,7 +32,7 @@ const App = (props) => {
 
   const addPerson = () => {
     const personObject = {
-      id: newName.toLowerCase(),
+      id: persons.length + 1,
       name: newName,
       number: newNumber,
     }
@@ -30,7 +42,7 @@ const App = (props) => {
     setNewNumber('')
   }
 
-  const personFound = persons.find((person) => person.id === newName.toLowerCase()) 
+  const personFound = persons.find((person) => person.name.toLowerCase() === newName.toLowerCase()) 
 
   const alertUser = () => {
     window.alert(`${newName} is already added to phonebook`)
@@ -55,7 +67,7 @@ const App = (props) => {
     <div>
       <h2>Phonebook</h2>
       <Filter value={newFilter} onChange={handleFilterChange} />
-      <h2>add a new</h2>
+      <h2>Add a new</h2>
       <PersonForm 
         onSubmit={checkPerson}
         newName={newName}
