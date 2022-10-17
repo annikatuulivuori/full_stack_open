@@ -1,9 +1,21 @@
 import React from 'react'
+import { useState } from 'react'
 
 const CountrySimple = ({ country }) => {
+    const [showOneCountry, setShowOneCountry] = useState(false)
+
+    const handleClick = () => {
+        if (showOneCountry == false) {
+            setShowOneCountry(true)
+        } else {
+            setShowOneCountry(false)
+        }        
+    }
+
     return (
         <div>
-            {country.name.common} 
+            {country.name.common} <button onClick={handleClick}>show</button>
+            {showOneCountry && <OneCountry country={country}/>}
         </div>
     )
 }
