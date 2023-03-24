@@ -5,15 +5,28 @@ const App = () => {
     { name: 'Arto Hellas' }
   ]) 
   const [newName, setNewName] = useState('')
-  const [showAll, setShowAll] = useState(true)
+
+  const checkPerson = (event) => {
+    event.preventDefault()
+    if(personFound) {
+      alertUser()
+    } else {
+      addPerson()
+    }
+  }
+
+  const personFound = persons.find((person) => person.name.toLowerCase() === newName.toLowerCase()) 
 
   const addPerson = (event) => {
-    event.preventDefault()
     const personObject = {
       name: newName,
     }
     setPersons(persons.concat(personObject))
     setNewName('')
+  }
+
+  const alertUser = () => {
+    window.alert(`${newName} is already added to phonebook`)
   }
 
   const handlePersonChange = (event) => {
@@ -24,7 +37,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addPerson}>
+      <form onSubmit={checkPerson}>
         <div>
           name: <input 
             value={newName}
