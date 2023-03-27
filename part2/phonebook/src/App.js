@@ -31,11 +31,19 @@ const App = () => {
 
   const personFound = persons.find((person) => person.name.toLowerCase() === newName.toLowerCase()) 
 
-  const addPerson = (event) => {
+  const addPerson = () => {
     const personObject = {
       name: newName,
       number: newNumber,
     }
+    axios
+    .post('http://localhost:3001/persons', personObject)
+    .then(response => {
+      setPersons(persons.concat(response.data))
+      setNewName('')
+      setNewNumber('')
+    })
+
     setPersons(persons.concat(personObject))
     setNewName('')
     setNewNumber('')
