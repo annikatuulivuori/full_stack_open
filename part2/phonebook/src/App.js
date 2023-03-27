@@ -18,10 +18,32 @@ const App = () => {
       })
   }, [])
 
+  const clearInputs = () => {
+    setNewName('')
+    setNewNumber('')
+  }
+
   const checkPerson = (event) => {
     event.preventDefault()
+    
     if(personFound) {
-      alertUser()
+      const confirmUpdate = window.confirm(`${newName} is already added to phonebook. Replace the old nubmer with a new one?`)
+      const previousPerson = persons.find(person => person.name === newName)
+      const updatedPerson = {...previousPerson, number: newNumber}
+      
+      if (persons.find(person => person.number === newNumber)) {
+        alertUser()
+      } else {
+        if (confirmUpdate) {
+          personService
+            .update(updatedPerson.id, updatedPerson)
+            .then(returnedPerson => {
+              setPersons(persons.map(p => p.id === returnedPerson.id ? returnedPerson : p))
+              clearInputs()
+            })
+            .catch(error => console.log("Error in updating person"))
+        }
+      }
     } else {
       addPerson()
     }
@@ -39,9 +61,9 @@ const App = () => {
       .create(personObject)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewNumber('')
+        clearInputs()
       })
+      .catch(error => console.log("Error in adding person"))
   }
 
   const deletePerson = (id) => {
@@ -54,9 +76,9 @@ const App = () => {
         .then(() => {
           const updatedPersons = persons.filter(person => person.id !== id)
           setPersons(updatedPersons)
-          setNewName('')
+          clearInputs()
         })
-        .catch(error => console.log("error"))
+        .catch(error => console.log("Error in removing person"))
     }
   }
 
