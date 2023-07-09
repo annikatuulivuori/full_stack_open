@@ -79,7 +79,13 @@ const App = () => {
           setSuccessMessage(null)
         }, 5000)
       })
-      .catch(error => console.log("Error in adding person"))
+      .catch(error => {
+         console.log(error.response.data)
+         setErrorMessage(`Person validation failed: name: Path \'name\' (\'${personObject.name}\') is shorter than the minimum allowed length (3).`)
+              setTimeout(() => {
+                setErrorMessage(null)
+              }, 5000)
+      })
   }
 
   const deletePerson = (id) => {
