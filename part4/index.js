@@ -2,16 +2,8 @@ const http = require('http')
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const mongoose = require('mongoose')
 
-/*if (process.argv.length<3) {
-  console.log('give password as argument')
-  process.exit(1)
-}*/
-
-//const password = process.argv[2]
-
-const url = `mongodb+srv://annika:kissa1234@cluster0.ypixfhw.mongodb.net/blogApp?retryWrites=true&w=majority`
+const url = `mongodb+srv://annika:<password>@cluster0.ypixfhw.mongodb.net/blogApp?retryWrites=true&w=majority`
 mongoose.set('strictQuery', false)
 mongoose.connect(url)
 
@@ -30,6 +22,7 @@ const Blog =  mongoose.model('Blog', blogSchema)
 app.get('/api/blogs', (request, response) => {
 	Blog.find({}).then(blog => {
 		response.json(blog)
+    mongoose.connection.close()
 	})
 })
 
