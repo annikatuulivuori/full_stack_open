@@ -4,40 +4,63 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
 
-const blogSchema = mongoose.Schema({
+/*if (process.argv.length<3) {
+  console.log('give password as argument')
+  process.exit(1)
+}*/
+
+//const password = process.argv[2]
+
+const url = `mongodb+srv://annika:kissa1234@cluster0.ypixfhw.mongodb.net/blogApp?retryWrites=true&w=majority`
+mongoose.set('strictQuery', false)
+mongoose.connect(url)
+
+app.use(cors())
+app.use(express.json())
+
+const blogSchema = new mongoose.Schema({
   title: String,
   author: String,
   url: String,
   likes: Number
 })
 
-const Blog = mongoose.model('Blog', blogSchema)
-
-const mongoUrl = 'mongodb://localhost/bloglist'
-mongoose.connect(mongoUrl)
-
-app.use(cors())
-app.use(express.json())
+const Blog =  mongoose.model('Blog', blogSchema)
 
 app.get('/api/blogs', (request, response) => {
-  Blog
-    .find({})
-    .then(blogs => {
-      response.json(blogs)
-    })
+	Blog.find({}).then(blog => {
+		response.json(blog)
+	})
 })
 
 app.post('/api/blogs', (request, response) => {
-  const blog = new Blog(request.body)
+  const body = new Blog(request.body)
+
+  if (body.title === undefined) {
+    return response.status(400).json({ error: 'title missing' })
+  }
+  if (body.author === undefined) {
+    return response.status(400).json({ error: 'author missing' })
+  }
+  if (body.url === undefined) {
+    return response.status(400).json({ error: 'url missing' })
+  }
+
+  const blog = new Blog({
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
+  })
 
   blog
     .save()
-    .then(result => {
-      response.status(201).json(result)
+    .then(savedBlog => {
+      response.json(savedBlog)
     })
 })
 
-const PORT = 3003
+const PORT = process.env.PORT ||3003
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
