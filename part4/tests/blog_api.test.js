@@ -33,91 +33,95 @@ beforeEach(async () => {
   await blogObject.save()
 })
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-})
+describe('initial blogs saved', () => {
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
 
-test('there are two blogs', async () => {
-  const response = await api.get('/api/blogs')
+  test('there are two blogs', async () => {
+    const response = await api.get('/api/blogs')
 
-  expect(response.body).toHaveLength(initialBlogs.length)
-})
+    expect(response.body).toHaveLength(initialBlogs.length)
+  })
 
-test('the unique indetifier property is named id', async () => {
-  const response = await api.get('/api/blogs')
+  test('the unique indetifier property is named id', async () => {
+    const response = await api.get('/api/blogs')
 
-  response.body.forEach((blog) => {
-    expect(blog.id).toBeDefined()
-    expect(blog._id).toBeUndefined()
+    response.body.forEach((blog) => {
+      expect(blog.id).toBeDefined()
+      expect(blog._id).toBeUndefined()
+    })
   })
 })
 
-test('POST, new blog post', async () => {
-  const testBlog = {
-    title: 'Canonical string reduction',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    likes: 12,
-  }
+describe('addition of a new blog post', () => {
+  test('POST, new blog post', async () => {
+    const testBlog = {
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+      likes: 12,
+    }
 
-  const blogsLengthBefore = (await Blog.find({})).length
+    const blogsLengthBefore = (await Blog.find({})).length
 
-  const response = await api
-    .post('/api/blogs')
-    .send(testBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    const response = await api
+      .post('/api/blogs')
+      .send(testBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-  expect(response.body).toMatchObject(testBlog)
+    expect(response.body).toMatchObject(testBlog)
 
-  const blogsLengthAfter = (await Blog.find({})).length
-  expect(blogsLengthAfter).toBe(blogsLengthBefore + 1)
-})
+    const blogsLengthAfter = (await Blog.find({})).length
+    expect(blogsLengthAfter).toBe(blogsLengthBefore + 1)
+  })
 
-test('POST, new blog has zero likes', async () => {
-  const testBlog = {
-    title: 'Canonical string reduction',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
-  }
+  test('POST, new blog has zero likes', async () => {
+    const testBlog = {
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
+    }
 
-  const response = await api
-    .post('/api/blogs')
-    .send(testBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    const response = await api
+      .post('/api/blogs')
+      .send(testBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-  console.log(await Blog.find({}))
-  expect(response.body.likes).toBe(0)
-})
+    console.log(await Blog.find({}))
+    expect(response.body.likes).toBe(0)
+  })
 
-test('POST, new blog with missing tittle returns 400 Bad request', async () => {
-  const testBlog = {
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    likes: 12
-  }
+  test('POST, new blog with missing tittle returns 400 Bad request', async () => {
+    const testBlog = {
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+      likes: 12
+    }
 
-  await api
-    .post('/api/blogs')
-    .send(testBlog)
-    .expect(400)
-})
+    await api
+      .post('/api/blogs')
+      .send(testBlog)
+      .expect(400)
+  })
 
-test('POST, new blog with missing url returns 400 Bad request', async () => {
-  const testBlog = {
-    title: 'Edgar W. Dijkstra',
-    author: 'Edsger W. Dijkstra',
-    likes: 12
-  }
+  test('POST, new blog with missing url returns 400 Bad request', async () => {
+    const testBlog = {
+      title: 'Edgar W. Dijkstra',
+      author: 'Edsger W. Dijkstra',
+      likes: 12
+    }
 
-  await api
-    .post('/api/blogs')
-    .send(testBlog)
-    .expect(400)
+    await api
+      .post('/api/blogs')
+      .send(testBlog)
+      .expect(400)
+  })
 })
 
 afterAll(async () => {
