@@ -3,3 +3,4 @@ requests
 .env
 .eslintrc.js
 .eslintignore
+.vscode
