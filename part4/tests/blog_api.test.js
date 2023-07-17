@@ -122,6 +122,24 @@ describe('addition of a new blog post', () => {
       .send(testBlog)
       .expect(400)
   })
+
+  test('PUT, update likes of one post', async () => {
+    const blogsBeforeUpdate = await Blog.find({})
+    const blogToUpdate = blogsBeforeUpdate[0]
+    const updatedLikes = Math.floor(Math.random() * 21)
+
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate._id}`)
+      .send({ likes: updatedLikes })
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAfterUpdate = await Blog.find({})
+
+    const updatedPost = blogsAfterUpdate[0]
+    expect(updatedPost.likes).toBe(updatedLikes)
+    expect(response.body.likes).toBe(updatedLikes)
+  })
 })
 
 describe('deletion of post', () => {
