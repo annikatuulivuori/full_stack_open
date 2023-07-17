@@ -124,6 +124,19 @@ describe('addition of a new blog post', () => {
   })
 })
 
+describe('deletion of post', () => {
+  test('DELETE, remove specific blog post', async () => {
+    const blogsBeforeDelete = await Blog.find({})
+    const blogToDelete = blogsBeforeDelete[0]
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+    const blogsAfterDelete = await Blog.find({})
+
+    expect(blogsAfterDelete.length).toBe(blogsBeforeDelete.length - 1)
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
