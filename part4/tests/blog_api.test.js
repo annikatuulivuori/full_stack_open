@@ -94,6 +94,32 @@ test('POST, new blog has zero likes', async () => {
   expect(response.body.likes).toBe(0)
 })
 
+test('POST, new blog with missing tittle returns 400 Bad request', async () => {
+  const testBlog = {
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(testBlog)
+    .expect(400)
+})
+
+test('POST, new blog with missing url returns 400 Bad request', async () => {
+  const testBlog = {
+    title: 'Edgar W. Dijkstra',
+    author: 'Edsger W. Dijkstra',
+    likes: 12
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(testBlog)
+    .expect(400)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
