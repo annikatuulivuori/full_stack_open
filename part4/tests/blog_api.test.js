@@ -55,6 +55,28 @@ test('the unique indetifier property is named id', async () => {
   })
 })
 
+test('POST, new blog post', async () => {
+    const testBlog = {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12,
+  }
+
+  const blogsLengthBefore = (await Blog.find({})).length
+
+  const response = await api
+    .post('/api/blogs')
+    .send(testBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  expect(response.body).toMatchObject(testBlog)
+
+  const blogsLengthAfter = (await Blog.find({})).length
+  expect(blogsLengthAfter).toBe(blogsLengthBefore + 1)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
