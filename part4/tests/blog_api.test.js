@@ -56,7 +56,7 @@ test('the unique indetifier property is named id', async () => {
 })
 
 test('POST, new blog post', async () => {
-    const testBlog = {
+  const testBlog = {
     title: 'Canonical string reduction',
     author: 'Edsger W. Dijkstra',
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
@@ -75,6 +75,23 @@ test('POST, new blog post', async () => {
 
   const blogsLengthAfter = (await Blog.find({})).length
   expect(blogsLengthAfter).toBe(blogsLengthBefore + 1)
+})
+
+test('POST, new blog has zero likes', async () => {
+  const testBlog = {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
+  }
+
+  const response = await api
+    .post('/api/blogs')
+    .send(testBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  console.log(await Blog.find({}))
+  expect(response.body.likes).toBe(0)
 })
 
 afterAll(async () => {
