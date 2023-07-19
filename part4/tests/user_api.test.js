@@ -41,6 +41,37 @@ describe('when there is initially one user at db', () => {
     const usernames = usersAtEnd.map(u => u.username)
     expect(usernames).toContain(newUser.username)
   })
+
+  test('password is too short, returns error', async () => {
+    const newUser = {
+      username: 'newUser',
+      name: 'new user',
+      password: 'pw'
+    }
+
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(response.body.error).toContain('password is missing or too short')
+  })
+
+  test('username is missing, returns error', async () => {
+    const newUser = {
+      name: 'new user',
+      password: 'password'
+    }
+
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(response.body.error).toContain('User validation failed: username')
+  })
 })
 
 afterAll(async () => {
