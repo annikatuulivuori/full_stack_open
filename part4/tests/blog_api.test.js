@@ -2,7 +2,10 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
   {
@@ -26,11 +29,7 @@ const initialBlogs = [
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
+  await Blog.insertMany(initialBlogs)
 })
 
 describe('initial blogs saved', () => {
@@ -58,6 +57,18 @@ describe('initial blogs saved', () => {
 })
 
 describe('addition of a new blog post', () => {
+  let token = null
+
+  beforeAll(async () => {
+    await User.deleteMany({})
+    const passwordHash = await bcrypt.hash('1234', 10)
+    const user = await new User({ username: 'username', passwordHash }).save()
+
+    const testUser = { username: 'testUser', id: user.id }
+    token = jwt.sign(testUser, process.env.SECRET)
+    return token
+  })
+
   test('POST, new blog post', async () => {
     const testBlog = {
       title: 'Canonical string reduction',
@@ -71,6 +82,7 @@ describe('addition of a new blog post', () => {
     const response = await api
       .post('/api/blogs')
       .send(testBlog)
+      .set('Authorization', `Bearer ${token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -90,6 +102,7 @@ describe('addition of a new blog post', () => {
     const response = await api
       .post('/api/blogs')
       .send(testBlog)
+      .set('Authorization', `Bearer ${token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -107,6 +120,7 @@ describe('addition of a new blog post', () => {
     await api
       .post('/api/blogs')
       .send(testBlog)
+      .set('Authorization', `Bearer ${token}`)
       .expect(400)
   })
 
@@ -120,6 +134,7 @@ describe('addition of a new blog post', () => {
     await api
       .post('/api/blogs')
       .send(testBlog)
+      .set('Authorization', `Bearer ${token}`)
       .expect(400)
   })
 
@@ -131,6 +146,7 @@ describe('addition of a new blog post', () => {
     const response = await api
       .put(`/api/blogs/${blogToUpdate._id}`)
       .send({ likes: updatedLikes })
+      .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
@@ -143,11 +159,25 @@ describe('addition of a new blog post', () => {
 })
 
 describe('deletion of post', () => {
+  let token = null
+  let testUser = null
+
+  beforeAll(async () => {
+    await User.deleteMany({})
+    const passwordHash = await bcrypt.hash('1234', 10)
+    const user = await new User({ username: 'username', passwordHash }).save()
+
+    testUser = { username: 'testUser', id: user.id }
+    token = jwt.sign(testUser, process.env.SECRET)
+    return token
+  })
   test('DELETE, remove specific blog post', async () => {
     const blogsBeforeDelete = await Blog.find({})
     const blogToDelete = blogsBeforeDelete[0]
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+    await api.delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204)
 
     const blogsAfterDelete = await Blog.find({})
 
