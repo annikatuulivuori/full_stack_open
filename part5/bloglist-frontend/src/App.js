@@ -9,6 +9,10 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
@@ -58,6 +62,26 @@ const App = () => {
     blogService.setToken(null)
   }
 
+  const addNewBlog = async (event) => {
+    event.preventDefault()
+
+    try {
+      const newBlog = {
+      title: title,
+      author: author,
+      url: url,
+    }
+
+    const blogObject = await blogService.create(newBlog)
+    setBlogs([...blogs, blogObject])
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+    } catch (exeption) {
+    console.log('error adding new blog')
+    }
+  }
+
   const loginForm = () => (
     <div>
       <h2>Log in to application</h2>
@@ -84,6 +108,34 @@ const App = () => {
       </form>
     </div>
   )
+
+  const blogForm = () => (
+    <div>
+      <h2>Create new</h2>
+      <form onSubmit={addNewBlog}>
+        <div>
+          title: <input 
+                  value={title} 
+                  onChange={({ target }) => setTitle(target.value)}
+                />
+        </div>
+        <div>
+          author: <input 
+                  value={author} 
+                  onChange={({ target }) => setAuthor(target.value)}
+                />
+        </div>
+        <div>
+          url: <input 
+                  value={url} 
+                  onChange={({ target }) => setUrl(target.value)}
+                />
+        </div>
+        <button type={"submit"}>Create</button>
+      </form>
+    </div>
+  )
+
     
   return (
       <div>
@@ -94,10 +146,11 @@ const App = () => {
             <p>{user.username} logged in</p>
             <button onClick={handleLogout}>logout</button>
           </div>
+          {blogForm()}
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}  
-        </div>}      
+        </div>}    
       </div>
     ) 
 }
