@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { ErrorNotification, SuccessNotification } from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -49,17 +53,32 @@ const App = () => {
       )
 
       blogService.setToken(user.token)
+
+      setSuccessMessage(`${user.username} logged in`)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
     } catch (exeption) {
       console.log('Wrong credentials')
+      setErrorMessage('wrong username or password ')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 
   const handleLogout = async (event) => {
     event.preventDefault()
 
-    window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
-    blogService.setToken(null)
+    try {
+      window.localStorage.removeItem('loggedBlogappUser')
+      setUser(null)
+      blogService.setToken(null)
+
+    } catch (exeption) {
+      console.log('error in logging out')
+    }
+    
   }
 
   const addNewBlog = async (event) => {
@@ -67,18 +86,28 @@ const App = () => {
 
     try {
       const newBlog = {
-      title: title,
-      author: author,
-      url: url,
-    }
+        title: title,
+        author: author,
+        url: url,
+      }
 
-    const blogObject = await blogService.create(newBlog)
-    setBlogs([...blogs, blogObject])
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+      const blogObject = await blogService.create(newBlog)
+      setBlogs([...blogs, blogObject])
+
+      setSuccessMessage(`new blog ${title} by ${author} added`)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
+
+      setTitle('')
+      setAuthor('')
+      setUrl('')
     } catch (exeption) {
-    console.log('error adding new blog')
+      console.log('error adding new blog')
+      setErrorMessage('Error in adding new blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 
@@ -136,9 +165,10 @@ const App = () => {
     </div>
   )
 
-    
   return (
       <div>
+        <ErrorNotification message={errorMessage} />
+        <SuccessNotification message={successMessage} />
         {!user && loginForm()}
         {user && <div>
           <h2>Blogs</h2>
