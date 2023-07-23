@@ -13,7 +13,7 @@ const App = () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )  
-  }, [])
+  }, [user])
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -25,6 +25,8 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+
+      blogService.setToken(user.token)
     } catch (exeption) {
       console.log('Wrong credentials')
     }
