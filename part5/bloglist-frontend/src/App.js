@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -22,20 +22,19 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(sortByLikes(blogs))
-    )  
+    )
   }, [user])
 
   useEffect(() => {
     const loggedUserJSON =
     window.localStorage.getItem(
-        'loggedBlogappUser', JSON.stringify(user)
+      'loggedBlogappUser', JSON.stringify(user)
     )
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const sortByLikes = (blogs) => {
@@ -44,13 +43,13 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password,
       })
 
-      console.log('App.js User object from login:', user);
+      console.log('App.js User object from login:', user)
 
       setUser(user)
       setUsername('')
@@ -94,8 +93,8 @@ const App = () => {
     }
   }
 
-  console.log('Blogs Array:', blogs);
-  console.log('Logged-In User:', user);
+  console.log('Blogs Array:', blogs)
+  console.log('Logged-In User:', user)
 
   const handleLogout = async (event) => {
     event.preventDefault()
@@ -108,13 +107,15 @@ const App = () => {
     } catch (exeption) {
       console.log('error in logging out')
     }
-    
+
   }
 
   const addNewBlog = async (event) => {
     event.preventDefault()
 
-    console.log("Form submitted")
+    console.log('Form submitted')
+
+    blogFormRef.current.toggleVisibility()
 
     try {
       const newBlog = {
@@ -154,7 +155,7 @@ const App = () => {
       <form onSubmit={handleLogin}>
         <div>
           username
-            <input
+          <input
             type="text"
             value={username}
             name="Username"
@@ -163,46 +164,48 @@ const App = () => {
         </div>
         <div>
           password
-            <input
+          <input
             type="password"
             value={password}
             name="Password"
             onChange={({ target }) => setPassword(target.value)}
           />
-          </div>
+        </div>
         <button type="submit">login</button>
       </form>
     </div>
   )
 
+  const blogFormRef = useRef()
+
   return (
-      <div>
-        <ErrorNotification message={errorMessage} />
-        <SuccessNotification message={successMessage} />
-        {!user && loginForm()}
-        {user && <div>
-          <h2>Blogs</h2>
-          <div>
-            <p>{user.username} logged in</p>
-            <button onClick={handleLogout}>logout</button>
-          </div>
-          <Togglable buttonLabel="new blog">
-            <BlogForm
-              onSubmit={addNewBlog}
-              title={title}
-              setTitle={setTitle}
-              author={author}
-              setAuthor={setAuthor}
-              url={url}
-              setUrl={setUrl}
-            />
-          </Togglable>
-          {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} user={user} handleRemove={handleRemove}/>
-          )}  
-        </div>}    
-      </div>
-    ) 
+    <div>
+      <ErrorNotification message={errorMessage} />
+      <SuccessNotification message={successMessage} />
+      {!user && loginForm()}
+      {user && <div>
+        <h2>Blogs</h2>
+        <div>
+          <p>{user.username} logged in</p>
+          <button onClick={handleLogout}>logout</button>
+        </div>
+        <Togglable buttonLabel="new blog" ref={blogFormRef}>
+          <BlogForm
+            onSubmit={addNewBlog}
+            title={title}
+            setTitle={setTitle}
+            author={author}
+            setAuthor={setAuthor}
+            url={url}
+            setUrl={setUrl}
+          />
+        </Togglable>
+        {blogs.map(blog =>
+          <Blog key={blog.id} blog={blog} user={user} handleRemove={handleRemove}/>
+        )}
+      </div>}
+    </div>
+  )
 }
 
 export default App

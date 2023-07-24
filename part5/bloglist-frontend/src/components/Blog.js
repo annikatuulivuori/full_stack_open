@@ -15,7 +15,7 @@ const Blog = ({ blog, user, handleRemove }) => {
         ...blog,
         likes: blog.likes + 1
       }
-      
+
       await blogService.update(blog.id, updatedBlog)
     } catch (exeption) {
       console.log('error updating likes (/components/Blog.js):', exeption)
@@ -31,17 +31,17 @@ const Blog = ({ blog, user, handleRemove }) => {
         <button onClick={handleDetailToggle}>
           {showDetails ? 'hide' : 'view'}
         </button>
-      </div> 
+      </div>
       {showDetails && <div>
-          <p>URL: {blog.url}</p>
-          <p>Likes: {blog.likes}</p><button onClick={handleLike}>like</button>
-          <p>By user: {blog.user.username}</p>
-          {canBeRemoved && (
-            <button onClick={() => handleRemove(blog)}>remove</button>)}
-        </div>}
+        <p>URL: {blog.url}</p>
+        <p>Likes: {blog.likes}</p><button onClick={handleLike}>like</button>
+        <p>By user: {blog.user.username}</p>
+        {canBeRemoved && (
+          <button onClick={() => handleRemove(blog)}>remove</button>)}
+      </div>}
     </div>
   )
-   
+
 }
 
 export default Blog
