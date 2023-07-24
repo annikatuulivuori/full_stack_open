@@ -1,28 +1,40 @@
 const BlogForm = ({ 
-  addNewBlog,
+  onSubmit,
   title, setTitle, 
   author, setAuthor, 
   url, setUrl, }) => {
+    const handleTitleChange = (event) => {
+      setTitle(event.target.value);
+    }
+  
+    const handleAuthorChange = (event) => {
+      setAuthor(event.target.value);
+    }
+  
+    const handleUrlChange = (event) => {
+      setUrl(event.target.value);
+    }
+
     return (
       <div>
         <h2>Create new</h2>
-        <form onSubmit={addNewBlog}>
+        <form onSubmit={onSubmit}>
           <div>
             title: <input 
                 value={title} 
-                onChange={setTitle}
+                onChange={handleTitleChange}
             />
           </div>
           <div>
             author: <input 
                 value={author} 
-                onChange={setAuthor}
+                onChange={handleAuthorChange}
             />
           </div>
           <div>
             url: <input 
                 value={url} 
-                onChange={setUrl}
+                onChange={handleUrlChange}
             />
           </div>
           <button type="submit">Create</button>

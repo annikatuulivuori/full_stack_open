@@ -10,6 +10,8 @@ const Togglable = (props) => {
     setVisible(!visible)
   }
 
+  console.log("Children:", props.children)
+  
   return (
     <div>
       <div style={hideWhenVisible}>

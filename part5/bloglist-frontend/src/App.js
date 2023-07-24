@@ -54,12 +54,12 @@ const App = () => {
         'loggedBlogappUser', JSON.stringify(user)
       )
 
-      blogService.setToken(user.token)
-
       setSuccessMessage(`${user.username} logged in`)
       setTimeout(() => {
         setSuccessMessage(null)
       }, 5000)
+
+      blogService.setToken(user.token)
     } catch (exeption) {
       console.log('Wrong credentials')
       setErrorMessage('wrong username or password ')
@@ -86,15 +86,22 @@ const App = () => {
   const addNewBlog = async (event) => {
     event.preventDefault()
 
+    console.log("Form submitted")
+
     try {
       const newBlog = {
         title: title,
         author: author,
         url: url,
       }
+      console.log('New Blog Data:', newBlog)
 
       const blogObject = await blogService.create(newBlog)
+      console.log('Response from backend:', blogObject)
       setBlogs([...blogs, blogObject])
+
+      const updatedBlogs = await blogService.getAll()
+      setBlogs(updatedBlogs)
 
       setSuccessMessage(`new blog ${title} by ${author} added`)
       setTimeout(() => {
