@@ -3,6 +3,8 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import { ErrorNotification, SuccessNotification } from './components/Notification'
+import BlogForm from './components/BlogForm.js'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -138,33 +140,6 @@ const App = () => {
     </div>
   )
 
-  const blogForm = () => (
-    <div>
-      <h2>Create new</h2>
-      <form onSubmit={addNewBlog}>
-        <div>
-          title: <input 
-                  value={title} 
-                  onChange={({ target }) => setTitle(target.value)}
-                />
-        </div>
-        <div>
-          author: <input 
-                  value={author} 
-                  onChange={({ target }) => setAuthor(target.value)}
-                />
-        </div>
-        <div>
-          url: <input 
-                  value={url} 
-                  onChange={({ target }) => setUrl(target.value)}
-                />
-        </div>
-        <button type={"submit"}>Create</button>
-      </form>
-    </div>
-  )
-
   return (
       <div>
         <ErrorNotification message={errorMessage} />
@@ -176,7 +151,17 @@ const App = () => {
             <p>{user.username} logged in</p>
             <button onClick={handleLogout}>logout</button>
           </div>
-          {blogForm()}
+          <Togglable buttonLabel="new blog">
+            <BlogForm
+              onSubmit={addNewBlog}
+              title={title}
+              setTitle={setTitle}
+              author={author}
+              setAuthor={setAuthor}
+              url={url}
+              setUrl={setUrl}
+            />
+          </Togglable>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}  
