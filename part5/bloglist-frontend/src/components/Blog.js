@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './../index.css'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, user, handleRemove }) => {
   const [showDetails, setShowDetails] = useState(false)
 
   const handleDetailToggle = () => {
@@ -22,6 +22,8 @@ const Blog = ({ blog }) => {
     }
   }
 
+  const canBeRemoved = user && user.username === blog.user.username
+
   return (
     <div className="blogStyle">
       <div>
@@ -34,6 +36,8 @@ const Blog = ({ blog }) => {
           <p>URL: {blog.url}</p>
           <p>Likes: {blog.likes}</p><button onClick={handleLike}>like</button>
           <p>By user: {blog.user.username}</p>
+          {canBeRemoved && (
+            <button onClick={() => handleRemove(blog)}>remove</button>)}
         </div>}
     </div>
   )

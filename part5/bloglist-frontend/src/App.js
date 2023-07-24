@@ -50,9 +50,13 @@ const App = () => {
         username, password,
       })
 
+      console.log('App.js User object from login:', user);
+
       setUser(user)
       setUsername('')
       setPassword('')
+
+      blogService.setToken(user.token)
 
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
@@ -62,8 +66,6 @@ const App = () => {
       setTimeout(() => {
         setSuccessMessage(null)
       }, 5000)
-
-      blogService.setToken(user.token)
     } catch (exeption) {
       console.log('Wrong credentials')
       setErrorMessage('wrong username or password ')
@@ -72,6 +74,28 @@ const App = () => {
       }, 5000)
     }
   }
+
+  const handleRemove = async (blogToRemove) => {
+    try {
+      if (window.confirm(`Remove "${blogToRemove.title}" by ${blogToRemove.author}?`)) {
+        await blogService.remove(blogToRemove.id)
+        setBlogs(blogs.filter((blog) => blog.id !== blogToRemove.id))
+        setSuccessMessage(`Blog "${blogToRemove.title}" by ${blogToRemove.author} removed`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
+      }
+    } catch (exeption) {
+      console.log('error removing blog: ', exeption)
+      setErrorMessage('error removing blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
+  console.log('Blogs Array:', blogs);
+  console.log('Logged-In User:', user);
 
   const handleLogout = async (event) => {
     event.preventDefault()
@@ -174,7 +198,7 @@ const App = () => {
             />
           </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} user={user} handleRemove={handleRemove}/>
           )}  
         </div>}    
       </div>
