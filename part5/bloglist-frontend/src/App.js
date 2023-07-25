@@ -51,6 +51,7 @@ const App = () => {
 
       console.log('App.js User object from login:', user)
 
+
       setUser(user)
       setUsername('')
       setPassword('')
@@ -65,9 +66,36 @@ const App = () => {
       setTimeout(() => {
         setSuccessMessage(null)
       }, 5000)
-    } catch (exeption) {
-      console.log('Wrong credentials')
-      setErrorMessage('wrong username or password ')
+    } catch (exception) {
+      console.log('error during login: ', exception)
+      if (exception.response && exception.response.status === 401) {
+        setErrorMessage('Wrong username or password')
+      } else {
+        setErrorMessage('An error occurred during login')
+      }
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
+  const handleUpdateLikes = async (blogToUpdate) => {
+    try {
+      const updatedBlog = {
+        ...blogToUpdate,
+        likes: blogToUpdate.likes + 1
+      }
+
+      await blogService.update(blogToUpdate.id, updatedBlog)
+
+      setBlogs((previousBlogs) =>
+        previousBlogs.map((blog) =>
+          blog.id === blogToUpdate.id ? {
+            ...blog, likes: updatedBlog.likes
+          } : blog))
+    } catch (exception) {
+      console.log('error updating blog: ', exception)
+      setErrorMessage('error updating blog')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -84,8 +112,8 @@ const App = () => {
           setSuccessMessage(null)
         }, 5000)
       }
-    } catch (exeption) {
-      console.log('error removing blog: ', exeption)
+    } catch (exception) {
+      console.log('error removing blog: ', exception)
       setErrorMessage('error removing blog')
       setTimeout(() => {
         setErrorMessage(null)
@@ -104,7 +132,7 @@ const App = () => {
       setUser(null)
       blogService.setToken(null)
 
-    } catch (exeption) {
+    } catch (exception) {
       console.log('error in logging out')
     }
 
@@ -140,7 +168,7 @@ const App = () => {
       setTitle('')
       setAuthor('')
       setUrl('')
-    } catch (exeption) {
+    } catch (exception) {
       console.log('error adding new blog')
       setErrorMessage('Error in adding new blog')
       setTimeout(() => {
@@ -201,7 +229,7 @@ const App = () => {
           />
         </Togglable>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} user={user} handleRemove={handleRemove}/>
+          <Blog key={blog.id} blog={blog} user={user} handleUpdateLikes={handleUpdateLikes}handleRemove={handleRemove}/>
         )}
       </div>}
     </div>

@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import './../index.css'
-import blogService from '../services/blogs'
 
-const Blog = ({ blog, user, handleRemove }) => {
+const Blog = ({ blog, user, handleUpdateLikes, handleRemove }) => {
   const [showDetails, setShowDetails] = useState(false)
 
   const handleDetailToggle = () => {
@@ -11,12 +10,7 @@ const Blog = ({ blog, user, handleRemove }) => {
 
   const handleLike = async () => {
     try {
-      const updatedBlog = {
-        ...blog,
-        likes: blog.likes + 1
-      }
-
-      await blogService.update(blog.id, updatedBlog)
+      await handleUpdateLikes(blog)
     } catch (exeption) {
       console.log('error updating likes (/components/Blog.js):', exeption)
     }
