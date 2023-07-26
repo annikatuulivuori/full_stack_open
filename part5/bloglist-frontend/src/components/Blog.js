@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './../index.css'
 
-const Blog = ({ blog, user, handleUpdateLikes, handleRemove }) => {
+const Blog = ({ blog, user, handleUpdateLikes, removeBlog }) => {
   const [showDetails, setShowDetails] = useState(false)
 
   const handleDetailToggle = () => {
@@ -16,7 +16,11 @@ const Blog = ({ blog, user, handleUpdateLikes, handleRemove }) => {
     }
   }
 
-  const canBeRemoved = user && user.username === blog.user.username
+  const handleRemove = async () => {
+    if (window.confirm(`Remove "${blog.title}" by ${blog.author}?`)) {
+      removeBlog(blog.id)
+    }
+  }
 
   return (
     <div className="blogStyle">
@@ -30,8 +34,8 @@ const Blog = ({ blog, user, handleUpdateLikes, handleRemove }) => {
         <p>URL: {blog.url}</p>
         <p>Likes: {blog.likes}</p><button onClick={handleLike}>like</button>
         <p>By user: {blog.user.username}</p>
-        {canBeRemoved && (
-          <button onClick={() => handleRemove(blog)}>remove</button>)}
+        {blog.user.username === user.username && (
+          <button onClick={handleRemove}>remove</button>)}
       </div>}
     </div>
   )
