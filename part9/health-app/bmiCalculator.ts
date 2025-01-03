@@ -5,9 +5,8 @@ const calculateBmi = (height : number, weight : number): string => {
   else if (bmi >= 18.5 && bmi < 25.0) return 'Normal range';
   else if (bmi >= 25.0 && bmi < 30.0) return 'Overweight';
   else if (bmi >= 30.0) return 'Obese';
-  else throw new Error('Error in calculating BMI! Chekc input values')
-
-}
+  else throw new Error('Error in calculating BMI! Chekc input values');
+};
 
 try {
   const height: number = Number(process.argv[2]);

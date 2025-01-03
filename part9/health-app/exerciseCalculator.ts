@@ -26,13 +26,13 @@ const calculateRating = (average: number, dailyGoal: number): Rating => {
   if (ratio >= 1) return Rating.GREAT;
   else if (ratio >= 0.8) return Rating.GOOD;
   else return Rating.OK;
-}
+};
 
 const getDescription = (rating: number): Description => {
   if (rating == 3) return Description.GREAT;
   else if (rating == 2) return Description.GOOD;
   else return Description.OK;
-}
+};
 
 const calculateExercises = (dailyExerciseHours: number[], dailyGoal: number): Result => {
   const periodLength = dailyExerciseHours.length;
@@ -41,11 +41,11 @@ const calculateExercises = (dailyExerciseHours: number[], dailyGoal: number): Re
       accumulator += 1;
     }
     return accumulator;
-  },0)
-  const success = dailyExerciseHours.every(hours => hours >= dailyGoal)
+  },0);
+  const success = dailyExerciseHours.every(hours => hours >= dailyGoal);
   const average =  dailyExerciseHours.reduce((sum, currentValue) => sum + currentValue, 0) / dailyExerciseHours.length;
-  const rating = calculateRating(average, dailyGoal)
-  const ratingDescription = getDescription(rating)
+  const rating = calculateRating(average, dailyGoal);
+  const ratingDescription = getDescription(rating);
   const target = dailyGoal;
 
   return {
@@ -56,8 +56,8 @@ const calculateExercises = (dailyExerciseHours: number[], dailyGoal: number): Re
     ratingDescription,
     target,
     average
-  }
-}
+  };
+};
 
 try {
   const dailyGoal: number = Number(process.argv[2]);
