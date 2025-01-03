@@ -59,5 +59,13 @@ const calculateExercises = (dailyExerciseHours: number[], dailyGoal: number): Re
   }
 }
 
+try {
+  const dailyGoal: number = Number(process.argv[2]);
+  const dailyExerciseHours: number[] = process.argv.slice(3).map(arg => Number(arg));
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+  console.log(calculateExercises(dailyExerciseHours, dailyGoal));
+} catch (error: unknown) {
+  if (error instanceof Error) {
+    console.log("Error: " + error.message);
+  }
+}
